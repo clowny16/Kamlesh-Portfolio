@@ -15,7 +15,7 @@ const REASONS = ["QA / Contract work", "Full-time role", "Just saying hi"];
 
 /**
  * "Let's Break It" — sky video backdrop, dark form card, swap headline
- * where NICELY periodically reads PROPERLY. Posts leads to /api/lead.
+ * where NICELY periodically reads PROPERLY. Sends contact details via Web3Forms.
  */
 export default function ContactSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,12 +87,24 @@ export default function ContactSection() {
 
     setStatus("sending");
     try {
-      const res = await fetch("/api/lead", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          access_key: "e42c3e68-f704-4e50-b416-95f6b4f5220b",
+          subject: "New contact from Kamlesh Portfolio",
+          from_name: "Kamlesh Portfolio",
+          name: values.name.trim(),
+          email: values.email.trim(),
+          phone: values.phone.trim(),
+          reason: values.reason,
+          message: values.message.trim(),
+          botcheck: Boolean(values.website.trim()),
+        }),
+        signal: AbortSignal.timeout(20000),
       });
-      if (res.ok) {
+      const result: { success?: boolean } = await res.json();
+      if (res.ok && result.success === true) {
         setStatus("sent");
         setValues({ name: "", email: "", phone: "", reason: "", message: "", website: "" });
         toast.success("Details sent. Talk soon.");
@@ -191,6 +203,7 @@ export default function ContactSection() {
                   </label>
                   <input
                     id="lead-name"
+                    name="name"
                     placeholder="Your full name"
                     type="text"
                     autoComplete="name"
@@ -206,6 +219,7 @@ export default function ContactSection() {
                   </label>
                   <input
                     id="lead-email"
+                    name="email"
                     placeholder="name@company.com"
                     type="email"
                     autoComplete="email"
@@ -228,6 +242,7 @@ export default function ContactSection() {
                   </label>
                   <input
                     id="lead-phone"
+                    name="phone"
                     placeholder="+91"
                     type="tel"
                     autoComplete="tel"
@@ -267,6 +282,7 @@ export default function ContactSection() {
                   </label>
                   <input
                     id="lead-message"
+                    name="message"
                     placeholder="A few words"
                     type="text"
                     value={values.message}
