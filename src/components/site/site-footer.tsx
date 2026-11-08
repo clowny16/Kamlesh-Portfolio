@@ -62,7 +62,7 @@ export default function SiteFooter() {
                 <HoverText>{SITE.emailDisplay}</HoverText>
               </span>
             </a>
-            <SocialLinks className="-mx-[calc(10*var(--px))] flex items-center" />
+            <SocialLinks includeWhatsApp className="-mx-[calc(10*var(--px))] flex items-center" />
           </div>
         </div>
 

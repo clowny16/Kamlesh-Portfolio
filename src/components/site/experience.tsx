@@ -10,7 +10,7 @@ const JOBS = [
     company: "WebContrive Technologies Pvt. Ltd.",
     logo: "/images/companies/webcontrive.png",
     tagline: "Shopify Plus Partner",
-    role: "Manual QA Tester",
+    role: "QA Tester",
     period: "Jan 2026 – Present",
     location: "Surat, India",
     linkedin: SITE.linkedinWebcontrive,
