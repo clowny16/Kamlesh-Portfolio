@@ -1,0 +1,280 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------ */
+/*  Fonts (self-hosted, extracted from the original build)             */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: "Funnel Display";
+  src: url("/fonts/FunnelDisplay_latin-s.p.23zh95iq-x3nr.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/75affa71d1e2f6a7-s.p.13rul5q9jl2r0.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/0c89a48fa5027cee-s.p.1ii7211jqpzi_.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Theme tokens — mirrored from pamidordesign.co                      */
+/* ------------------------------------------------------------------ */
+@theme {
+  /* Palette */
+  --color-canvas: #efeeeb;
+  --color-canvas-80: #efeeebcc;
+  --color-ink: #0a0a0a;
+  --color-accent: #d12424;
+  --color-night: #0d0d0b;
+  --color-muted: #6b6862;
+  --color-night-muted: #9e9991;
+  --color-night-body: #bfbab2;
+  --color-rule: #ccc9c4;
+  --color-chip: #b8b5b0;
+  --color-night-hr: #918e89;
+
+  /* Type */
+  --font-funnel: "Funnel Display", "Helvetica Neue", Arial, sans-serif;
+  --font-archivo: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-space: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+
+  --text-display: clamp(2.25rem, 6.944vw, 6.25rem);
+  --text-display--line-height: 0.88;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-section: clamp(2rem, 7.222vw, 6.5rem);
+  --text-section--line-height: 1;
+  --text-section--letter-spacing: -0.02em;
+
+  --text-project: clamp(1.625rem, 4.167vw, 3.75rem);
+  --text-project--line-height: 1.05;
+  --text-project--letter-spacing: -0.015em;
+
+  --text-lead: clamp(1.3125rem, 2.778vw, 2.5rem);
+  --text-lead--line-height: 1.2;
+  --text-lead--letter-spacing: -0.015em;
+
+  --text-subhead: clamp(1.3125rem, 2.778vw, 2.5rem);
+  --text-subhead--line-height: 1.2;
+  --text-subhead--letter-spacing: -0.015em;
+
+  --text-body-lg: clamp(1.0625rem, 1.25vw, 1.125rem);
+  --text-body-lg--line-height: 1.5;
+  --text-body-lg--letter-spacing: -0.01em;
+
+  --text-body: clamp(0.9375rem, 1.111vw, 1rem);
+  --text-body--line-height: 1.55;
+  --text-body--letter-spacing: -0.01em;
+
+  --text-label: clamp(0.6875rem, 0.833vw, 0.75rem);
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.06em;
+
+  /* Layout */
+  --container-canvas: calc(1440 * var(--px));
+  --spacing-margin: 4rem;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Effects referenced by name in wave / door systems */
+  --wave-dim: #0a0a0a33;
+  --wave-flash: #d12424;
+  --wave-lit: #0a0a0a;
+  --night-chip: #6666661a;
+}
+
+:root {
+  /* Global responsive pixel — every measurement in the site scales from it */
+  --px: clamp(1px, 0.825 * min(100vw / 1728, 100vh / 680), 1.32px);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-archivo);
+  letter-spacing: -0.01em;
+  font-size: clamp(0.9375rem, 1.111vw, 1rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Systems (GSAP drives the motion — CSS only lays the groundwork)    */
+/* ------------------------------------------------------------------ */
+
+/* Hero side frame — shown only in the 1024–1439 window. A plain class
+   beats `min-[1440px]:hidden` + `lg:block`, whose generated media-query
+   order is not guaranteed in Tailwind v4. */
+.hero-side {
+  display: none;
+}
+@media (min-width: 64rem) and (max-width: 89.99rem) {
+  .hero-side {
+    display: block;
+  }
+}
+
+/* Scroll reveal — the "waiting" state covers pre-hydration; GSAP takes
+   over from there (data-gsap neutralises the CSS transition/transform). */
+.reveal {
+  transition:
+    transform 0.7s var(--ease-out-expo),
+    opacity 0.7s var(--ease-out-expo);
+}
+.reveal[data-reveal="waiting"] {
+  opacity: 0;
+  transform: translate3d(0, calc(13 * var(--px)), 0);
+  will-change: transform;
+}
+.reveal[data-gsap="true"] {
+  transition: none;
+}
+.reveal[data-gsap="true"][data-reveal="waiting"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Wave text — chars sit dim until GSAP lights them up */
+[data-wave] {
+  position: relative;
+}
+[data-wave] [data-char] {
+  color: var(--wave-dim);
+}
+/* Light variant used over dark backgrounds */
+[data-wave="night"] [data-char] {
+  --wave-dim: #ffffff2e;
+  --wave-lit: #ffffff;
+}
+
+/* Hero name — the photo chip grows in while the "sh" gives way
+   (pure-CSS infinite loop, driven by [data-door-open]) */
+@keyframes door-grow {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+    transform: scaleX(0);
+  }
+  1% {
+    opacity: 1;
+  }
+  8% {
+    transform: scaleX(1);
+  }
+  28% {
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+    transform: scaleX(1);
+  }
+  35% {
+    opacity: 1;
+  }
+  36% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+}
+@keyframes door-give {
+  0% {
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+    transform: translate(0);
+  }
+  8% {
+    transform: translateX(var(--door-o, 0px));
+  }
+  28% {
+    transform: translateX(var(--door-o, 0px));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+  }
+  36% {
+    transform: translate(0);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+[data-door-open] .door-add-img {
+  transform-origin: left center;
+  animation: 5s infinite door-grow;
+}
+[data-door-open] .door-give {
+  animation: 5s infinite door-give;
+}
+
+/* Marquee — layout only; the GSAP loop + scroll-velocity boost do the moving */
+.marquee-wrapper {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.marquee-track {
+  will-change: transform;
+  width: max-content;
+  display: inline-flex;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track > *:not(:first-child) {
+    visibility: hidden;
+  }
+}
+
+/* Thin elegant scrollbar for scrollable panels */
+.pamidor-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.pamidor-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pamidor-scroll::-webkit-scrollbar-thumb {
+  background: #0a0a0a33;
+  border-radius: 999px;
+}
+.pamidor-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #0a0a0a33 transparent;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Reduced motion — everything GSAP gates on prefersReducedMotion(),  */
+/*  this catches the CSS-side leftovers.                               */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-reveal="waiting"] {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

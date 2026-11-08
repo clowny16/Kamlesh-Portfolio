@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Lead captured from the contact form
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  reason    String?
+  message   String?
+  createdAt DateTime @default(now())
+}
+
+// Project showcased in the Work section
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  role        String
+  timeline    String
+  year        String
+  team        String
+  company     String?
+  link        String?
+  cover       String
+  tags        String // JSON array of chips shown on hover
+  description String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
